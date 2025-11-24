@@ -1,8 +1,37 @@
 """Tests for documentation providers."""
 
 import pytest
+import os
+import shutil
+from pathlib import Path
 from src.augments_mcp.providers.github import GitHubProvider
 from src.augments_mcp.providers.website import WebsiteProvider
+from src.augments_mcp.providers.local import LocalProvider
+
+
+@pytest.mark.asyncio
+async def test_local_provider():
+    """Test LocalProvider."""
+    # Create temp docs
+    test_dir = "tests/temp_local_docs"
+    os.makedirs(test_dir, exist_ok=True)
+    try:
+        with open(f"{test_dir}/test.md", "w", encoding="utf-8") as f:
+            f.write("# Test Doc\n\nContent")
+            
+        provider = LocalProvider()
+        
+        # Test fetch documentation
+        content = await provider.fetch_documentation(test_dir)
+        assert content is not None
+        assert "Test Doc" in content
+        
+        # Test close
+        await provider.close()
+        
+    finally:
+        if os.path.exists(test_dir):
+            shutil.rmtree(test_dir)
 
 
 @pytest.mark.asyncio

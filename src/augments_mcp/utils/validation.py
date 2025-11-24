@@ -80,7 +80,7 @@ def validate_framework_config(config: Dict[str, Any]) -> bool:
             return False
         
         # Validate category (must be one of the allowed categories)
-        allowed_categories = ["web", "backend", "mobile", "ai-ml", "design", "tools", "database", "state-management", "devops", "testing"]
+        allowed_categories = ["web", "backend", "mobile", "ai-ml", "design", "tools", "database", "state-management", "devops", "testing", "customers"]
         if config["category"] not in allowed_categories:
             logger.error("Invalid category", category=config["category"], allowed=allowed_categories)
             return False
@@ -134,12 +134,13 @@ def validate_documentation_source(source: Dict[str, Any]) -> bool:
         True if valid, False otherwise
     """
     try:
-        # Must have either github or website source
+        # Must have either github, website, or local source
         has_github = "github" in source and source["github"] is not None
         has_website = "website" in source and source["website"] is not None
+        has_local = "local_path" in source and source["local_path"] is not None
         
-        if not has_github and not has_website:
-            logger.error("Documentation source must have either github or website")
+        if not has_github and not has_website and not has_local:
+            logger.error("Documentation source must have either github, website, or local_path")
             return False
         
         # Validate GitHub source
@@ -175,6 +176,13 @@ def validate_documentation_source(source: Dict[str, Any]) -> bool:
             website = source["website"]
             if not isinstance(website, str) or not website.startswith(("http://", "https://")):
                 logger.error("Invalid website URL", website=website)
+                return False
+                
+        # Validate local source
+        if has_local:
+            local_path = source["local_path"]
+            if not isinstance(local_path, str) or not local_path.strip():
+                logger.error("Invalid local_path", path=local_path)
                 return False
         
         return True

@@ -72,3 +72,6 @@ dmypy.json
 # Project specific
 frameworks/*.json.bak
 test_output/
+
+data/
+frameworks/customers/

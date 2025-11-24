@@ -37,6 +37,7 @@ class FrameworkRegistry:
 class ProviderType(Enum):
     GITHUB = "github"
     WEBSITE = "website"
+    LOCAL = "local"
 
 __all__ = [
     "Framework", 

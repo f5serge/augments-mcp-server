@@ -10,6 +10,7 @@ from ..registry.manager import FrameworkRegistryManager
 from ..registry.cache import DocumentationCache
 from ..providers.github import GitHubProvider
 from ..providers.website import WebsiteProvider
+from ..providers.local import LocalProvider
 from ..utils.github_client import GitHubClient
 
 logger = structlog.get_logger(__name__)
@@ -139,7 +140,8 @@ async def refresh_framework_cache(
     website_provider: WebsiteProvider,
     framework: Optional[str] = None,
     force: bool = False,
-    ctx: Optional[Context] = None
+    ctx: Optional[Context] = None,
+    local_provider: Optional[LocalProvider] = None
 ) -> str:
     """Refresh cached documentation for frameworks.
     
@@ -151,6 +153,7 @@ async def refresh_framework_cache(
         framework: Specific framework to refresh, or None for all
         force: Force refresh even if cache is still valid
         ctx: MCP context for progress reporting
+        local_provider: Optional Local provider
         
     Returns:
         Status message with refresh results
@@ -176,7 +179,7 @@ async def refresh_framework_cache(
             try:
                 result = await _refresh_single_framework(
                     registry, cache, github_provider, website_provider,
-                    fw_name, force
+                    fw_name, force, local_provider
                 )
                 refresh_results.append(result)
                 
@@ -412,7 +415,8 @@ async def _refresh_single_framework(
     github_provider: GitHubProvider,
     website_provider: WebsiteProvider,
     framework: str,
-    force: bool
+    force: bool,
+    local_provider: Optional[LocalProvider] = None
 ) -> Dict[str, Any]:
     """Refresh cache for a single framework."""
     
@@ -438,6 +442,31 @@ async def _refresh_single_framework(
     # Refresh documentation
     doc_source = config.sources.documentation
     
+    if hasattr(doc_source, 'local_path') and doc_source.local_path and local_provider:
+        try:
+            # Invalidate existing cache
+            await cache.invalidate(framework, "", "local")
+            
+            # Fetch fresh content
+            fresh_content = await local_provider.fetch_documentation(
+                path=doc_source.local_path
+            )
+            
+            if fresh_content:
+                await cache.set(
+                    framework=framework,
+                    content=fresh_content,
+                    path="",
+                    source_type="docs",
+                    version=config.version
+                )
+                refresh_count += 1
+        except Exception as e:
+            logger.warning("Local cache refresh failed", 
+                          framework=framework, 
+                          path=doc_source.local_path,
+                          error=str(e))
+
     if doc_source.github:
         try:
             # Invalidate existing cache
@@ -495,6 +524,28 @@ async def _refresh_single_framework(
     if config.sources.examples:
         examples_source = config.sources.examples
         
+        if hasattr(examples_source, 'local_path') and examples_source.local_path and local_provider:
+            try:
+                await cache.invalidate(framework, "", "examples")
+                
+                fresh_examples = await local_provider.fetch_examples(
+                    path=examples_source.local_path
+                )
+                
+                if fresh_examples:
+                    await cache.set(
+                        framework=framework,
+                        content=fresh_examples,
+                        path="examples",
+                        source_type="examples",
+                        version=config.version
+                    )
+                    refresh_count += 1
+            except Exception as e:
+                logger.warning("Local examples cache refresh failed", 
+                              framework=framework,
+                              error=str(e))
+
         if examples_source.github:
             try:
                 await cache.invalidate(framework, "", "examples")

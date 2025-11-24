@@ -9,6 +9,7 @@ from ..registry.manager import FrameworkRegistryManager
 from ..registry.cache import DocumentationCache
 from ..providers.github import GitHubProvider
 from ..providers.website import WebsiteProvider
+from ..providers.local import LocalProvider
 
 logger = structlog.get_logger(__name__)
 
@@ -21,7 +22,8 @@ async def get_framework_docs(
     framework: str,
     section: Optional[str] = None,
     use_cache: bool = True,
-    ctx: Optional[Context] = None
+    ctx: Optional[Context] = None,
+    local_provider: Optional[LocalProvider] = None
 ) -> str:
     """Retrieve comprehensive documentation for a specific framework.
     
@@ -34,6 +36,7 @@ async def get_framework_docs(
         section: Specific documentation section (e.g., 'installation', 'configuration')
         use_cache: Whether to use cached content
         ctx: MCP context for progress reporting
+        local_provider: Optional Local documentation provider
         
     Returns:
         Formatted documentation content with examples and best practices
@@ -66,9 +69,32 @@ async def get_framework_docs(
         # Fetch from sources
         documentation_parts = []
         
-        # Try GitHub source first
         doc_source = config.sources.documentation
-        if doc_source.github:
+        
+        # Try Local source first if available (highest priority)
+        if hasattr(doc_source, 'local_path') and doc_source.local_path and local_provider:
+            if ctx:
+                await ctx.debug(f"Fetching from local: {doc_source.local_path}")
+            
+            try:
+                local_content = await local_provider.fetch_documentation(
+                    path=doc_source.local_path,
+                    target_path=section
+                )
+                
+                if local_content:
+                    documentation_parts.append({
+                        "source": "Local",
+                        "path": doc_source.local_path,
+                        "content": local_content
+                    })
+            except Exception as e:
+                logger.warning("Local fetch failed", framework=framework, error=str(e))
+                if ctx:
+                    await ctx.debug(f"Local fetch failed: {str(e)}")
+
+        # Try GitHub source
+        if doc_source.github and (not documentation_parts or section):
             if ctx:
                 await ctx.debug(f"Fetching from GitHub: {doc_source.github.repo}")
             
@@ -90,7 +116,7 @@ async def get_framework_docs(
                 if ctx:
                     await ctx.debug(f"GitHub fetch failed: {str(e)}")
         
-        # Try website source if GitHub didn't work or as supplement
+        # Try website source if other sources didn't work or as supplement
         if doc_source.website and (not documentation_parts or section):
             if ctx:
                 await ctx.debug(f"Fetching from website: {doc_source.website}")
@@ -174,7 +200,8 @@ async def get_framework_examples(
     website_provider: WebsiteProvider,
     framework: str,
     pattern: Optional[str] = None,
-    ctx: Optional[Context] = None
+    ctx: Optional[Context] = None,
+    local_provider: Optional[LocalProvider] = None
 ) -> str:
     """Get code examples for specific patterns within a framework.
     
@@ -186,6 +213,7 @@ async def get_framework_examples(
         framework: Framework name
         pattern: Specific pattern (e.g., 'components', 'routing', 'authentication')
         ctx: MCP context for progress reporting
+        local_provider: Optional Local documentation provider
         
     Returns:
         Code examples with explanations and best practices
@@ -221,6 +249,26 @@ async def get_framework_examples(
         if config.sources.examples:
             examples_source = config.sources.examples
             
+            # Try Local examples first
+            if hasattr(examples_source, 'local_path') and examples_source.local_path and local_provider:
+                if ctx:
+                    await ctx.debug(f"Fetching examples from local: {examples_source.local_path}")
+                
+                try:
+                    local_examples = await local_provider.fetch_examples(
+                        path=examples_source.local_path,
+                        pattern=pattern
+                    )
+                    
+                    if local_examples:
+                        examples_parts.append({
+                            "source": "Local Examples",
+                            "path": examples_source.local_path,
+                            "content": local_examples
+                        })
+                except Exception as e:
+                    logger.warning("Local examples fetch failed", framework=framework, error=str(e))
+
             if examples_source.github:
                 if ctx:
                     await ctx.debug(f"Fetching examples from GitHub: {examples_source.github.repo}")
@@ -265,6 +313,23 @@ async def get_framework_examples(
         if not examples_parts:
             doc_source = config.sources.documentation
             
+            # Try local documentation as fallback
+            if hasattr(doc_source, 'local_path') and doc_source.local_path and local_provider:
+                try:
+                    local_examples = await local_provider.fetch_examples(
+                        path=doc_source.local_path,
+                        pattern=pattern
+                    )
+                    
+                    if local_examples:
+                        examples_parts.append({
+                            "source": "Local Documentation",
+                            "path": doc_source.local_path,
+                            "content": local_examples
+                        })
+                except Exception as e:
+                    logger.warning("Local examples fallback failed", framework=framework, error=str(e))
+
             if doc_source.github:
                 # Look for examples in common directories
                 example_paths = ["examples", "docs/examples", "samples", "demos"]
@@ -299,7 +364,7 @@ async def get_framework_examples(
             # Try to extract examples from main documentation
             doc_content = await get_framework_docs(
                 registry, cache, github_provider, website_provider,
-                framework, pattern, True, None
+                framework, pattern, True, None, local_provider
             )
             
             if doc_content and not doc_content.startswith("Error:"):
@@ -361,7 +426,8 @@ async def search_documentation(
     framework: str,
     query: str,
     limit: int = 10,
-    ctx: Optional[Context] = None
+    ctx: Optional[Context] = None,
+    local_provider: Optional[LocalProvider] = None
 ) -> List[Dict[str, Any]]:
     """Smart search within a framework's documentation with fallback to fresh docs.
     
@@ -374,6 +440,7 @@ async def search_documentation(
         query: Search query
         limit: Maximum number of results
         ctx: MCP context for progress reporting
+        local_provider: Optional Local documentation provider
         
     Returns:
         List of search results with context
@@ -408,7 +475,8 @@ async def search_documentation(
             framework=framework,
             section=inferred_section,
             use_cache=False,  # Force fresh fetch
-            ctx=ctx
+            ctx=ctx,
+            local_provider=local_provider
         )
         
         if fresh_docs and not fresh_docs.startswith("Error:"):
@@ -479,6 +547,8 @@ async def _format_documentation(
                 formatted_parts.append(f"**Repository:** {part['repo']}")
             if 'url' in part:
                 formatted_parts.append(f"**URL:** {part['url']}")
+            if 'path' in part:
+                formatted_parts.append(f"**Path:** {part['path']}")
             formatted_parts.append("")
         
         # Clean and format the content
