@@ -1,0 +1,41 @@
+{
+  "name": "fabric-link-dataverse",
+  "display_name": "Microsoft Fabric Link for Dataverse",
+  "category": "data-platforms",
+  "type": "data-integration-service",
+  "description": "Zero-copy integration that links Microsoft Dataverse environment to Microsoft Fabric OneLake",
+  "version": "latest",
+  "sources": {
+    "documentation": {
+      "website": "https://learn.microsoft.com/en-us/power-apps/maker/data-platform/azure-synapse-link-view-in-fabric"
+    }
+  },
+  "sections": {
+    "overview": "azure-synapse-link-view-in-fabric",
+    "prerequisites": "azure-synapse-link-view-in-fabric#prerequisites",
+    "link-environment": "azure-synapse-link-view-in-fabric#link-your-dataverse-environment-to-microsoft-fabric-and-unlock-insights",
+    "unlink-environment": "azure-synapse-link-view-in-fabric#unlink-microsoft-fabric-from-your-dataverse-environment",
+    "security": "azure-synapse-link-view-in-fabric#security"
+  },
+  "context_files": [
+    "README.md"
+  ],
+  "key_features": [
+    "zero-copy-integration",
+    "onelake-integration",
+    "near-real-time",
+    "no-etl",
+    "power-bi-direct-lake",
+    "t-sql-endpoint",
+    "spark-notebooks"
+  ],
+  "common_patterns": [
+    "cross-tenant-analytics",
+    "unified-data-estate",
+    "ai-insights",
+    "direct-lake-reporting",
+    "data-archiving"
+  ],
+  "priority": 80
+}
+

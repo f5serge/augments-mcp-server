@@ -343,7 +343,7 @@ async def list_available_frameworks(
     """List all available frameworks, optionally filtered by category.
     
     Args:
-        category: Filter by category (web, backend, mobile, ai-ml, design, tools)
+        category: Filter by category (web, backend, mobile, ai-ml, design, tools, data-platforms)
     
     Returns:
         List of framework information including name, category, and description

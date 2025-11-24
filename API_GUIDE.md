@@ -28,7 +28,7 @@ GET /frameworks?category=web
 ```
 
 **Parameters:**
-- `category` (optional): Filter by category (web, backend, mobile, ai-ml, design, tools)
+- `category` (optional): Filter by category (web, backend, mobile, ai-ml, design, tools, data-platforms)
 
 **Example Response:**
 ```json

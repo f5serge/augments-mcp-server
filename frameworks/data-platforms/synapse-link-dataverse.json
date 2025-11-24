@@ -1,0 +1,43 @@
+{
+  "name": "synapse-link-dataverse",
+  "display_name": "Azure Synapse Link for Dataverse",
+  "category": "data-platforms",
+  "type": "data-integration-service",
+  "description": "Service that continuously replicates Microsoft Dataverse data to Azure Synapse Analytics or Azure Data Lake Storage Gen2",
+  "version": "latest",
+  "sources": {
+    "documentation": {
+      "website": "https://learn.microsoft.com/en-us/power-apps/maker/data-platform/export-to-data-lake"
+    }
+  },
+  "sections": {
+    "overview": "export-to-data-lake",
+    "create-link": "azure-synapse-link-synapse",
+    "advanced-configuration": "azure-synapse-link-advanced-configuration",
+    "manage-link": "azure-synapse-link-manage",
+    "delta-lake": "azure-synapse-link-delta-lake",
+    "faq": "azure-synapse-link-faq"
+  },
+  "context_files": [
+    "README.md"
+  ],
+  "key_features": [
+    "continuous-replication",
+    "synapse-integration",
+    "data-lake-gen2",
+    "spark-pool-support",
+    "serverless-sql-support",
+    "parquet-format",
+    "delta-lake-format",
+    "incremental-updates"
+  ],
+  "common_patterns": [
+    "data-warehousing",
+    "advanced-analytics",
+    "predictive-maintenance",
+    "historical-analysis",
+    "power-bi-reporting"
+  ],
+  "priority": 80
+}
+

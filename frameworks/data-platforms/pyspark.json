@@ -1,0 +1,54 @@
+{
+  "name": "pyspark",
+  "display_name": "PySpark",
+  "category": "data-platforms",
+  "type": "distributed-computing-framework",
+  "description": "Python API for Apache Spark to support real-time, large-scale data processing",
+  "version": "latest",
+  "sources": {
+    "documentation": {
+      "website": "https://spark.apache.org/docs/latest/api/python/"
+    },
+    "examples": {
+      "github": {
+        "repo": "apache/spark",
+        "docs_path": "examples/src/main/python",
+        "branch": "master"
+      }
+    }
+  },
+  "sections": {
+    "getting-started": "getting_started/index",
+    "user-guide": "user_guide/index",
+    "api-reference": "reference/index",
+    "development": "development/index",
+    "migration": "migration_guide/index"
+  },
+  "context_files": [
+    "README.md",
+    "python/README.md"
+  ],
+  "key_features": [
+    "rdd",
+    "dataframes",
+    "spark-sql",
+    "structured-streaming",
+    "mllib",
+    "pandas-api-on-spark",
+    "graphx",
+    "distributed-processing",
+    "fault-tolerance",
+    "lazy-evaluation"
+  ],
+  "common_patterns": [
+    "etl-pipelines",
+    "batch-processing",
+    "stream-processing",
+    "machine-learning-pipelines",
+    "exploratory-data-analysis",
+    "graph-processing",
+    "interactive-analytics"
+  ],
+  "priority": 88
+}
+

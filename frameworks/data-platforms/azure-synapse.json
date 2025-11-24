@@ -1,0 +1,59 @@
+{
+  "name": "azure-synapse",
+  "display_name": "Azure Synapse Analytics",
+  "category": "data-platforms",
+  "type": "analytics-service",
+  "description": "Enterprise analytics service that accelerates time to insight across data warehouses and big data systems",
+  "version": "latest",
+  "sources": {
+    "documentation": {
+      "website": "https://learn.microsoft.com/en-us/azure/synapse-analytics/"
+    },
+    "examples": {
+      "github": {
+        "repo": "Azure-Samples/Synapse",
+        "docs_path": "",
+        "branch": "main"
+      }
+    }
+  },
+  "sections": {
+    "overview": "overview-what-is",
+    "get-started": "get-started",
+    "sql": "sql/overview-architecture",
+    "spark": "spark/apache-spark-overview",
+    "data-explorer": "data-explorer/data-explorer-overview",
+    "pipelines": "data-integration/data-integration-data-factory",
+    "security": "security/synapse-workspace-access-control-overview",
+    "machine-learning": "machine-learning/what-is-machine-learning",
+    "database-templates": "database-designer/concepts-database-templates",
+    "monitoring": "monitoring/overview-monitoring"
+  },
+  "context_files": [
+    "README.md"
+  ],
+  "key_features": [
+    "dedicated-sql-pool",
+    "serverless-sql-pool",
+    "apache-spark",
+    "synapse-pipelines",
+    "synapse-studio",
+    "data-explorer",
+    "integrated-security",
+    "purview-integration",
+    "machine-learning",
+    "synapse-link",
+    "database-templates"
+  ],
+  "common_patterns": [
+    "modern-data-warehouse",
+    "advanced-analytics",
+    "real-time-analytics",
+    "data-ingestion",
+    "data-transformation",
+    "hybrid-transactional-analytical-processing",
+    "log-analytics",
+    "predictive-analytics"
+  ],
+  "priority": 85
+}

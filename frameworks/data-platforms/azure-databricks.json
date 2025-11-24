@@ -1,0 +1,78 @@
+{
+  "name": "azure-databricks",
+  "display_name": "Azure Databricks",
+  "category": "data-platforms",
+  "type": "data-analytics-platform",
+  "description": "Unified data analytics platform for accelerating big data analytics and artificial intelligence solutions",
+  "version": "latest",
+  "sources": {
+    "documentation": {
+      "website": "https://learn.microsoft.com/en-us/azure/databricks/"
+    },
+    "examples": {
+      "github": {
+        "repo": "databricks/databricks-sdk-py",
+        "docs_path": "examples",
+        "branch": "main"
+      }
+    }
+  },
+  "sections": {
+    "introduction": "introduction",
+    "getting-started": "getting-started",
+    "guides": "guides",
+    "data-engineering": "data-engineering",
+    "connect": "connect",
+    "machine-learning": "machine-learning",
+    "generative-ai": "generative-ai",
+    "workspace": "workspace",
+    "data-warehousing": "sql",
+    "delta": "delta",
+    "dev-tools": "dev-tools",
+    "administration": "admin",
+    "reference": "reference",
+    "oltp-datadase":"oltp/instances",
+    "business-intelligence": "ai-bi",
+    "compute": "compute",
+    "notebooks": "notebooks",
+    "tables": "tables",
+    "spark": "spark",
+    "developers": "developers",
+    "integrations": "integrations",
+    "security": "security",
+    "data-governance": "data-governance"
+  },
+  "context_files": [
+    "README.md"
+  ],
+  "key_features": [
+    "apache-spark",
+    "delta-lake",
+    "unity-catalog",
+    "mlflow",
+    "databricks-sql",
+    "photon-engine",
+    "serverless-compute",
+    "notebooks",
+    "workflows",
+    "autoloader",
+    "mosaic-ai",
+    "databricks-asset-bundles",
+    "databricks-assistant"
+  ],
+  "common_patterns": [
+    "etl-pipelines",
+    "delta-live-tables",
+    "structured-streaming",
+    "medallion-architecture",
+    "mlops-lifecycle",
+    "feature-store",
+    "vector-search",
+    "data-governance",
+    "batch-processing",
+    "streaming-analytics",
+    "generative-ai",
+    "ci-cd"
+  ],
+  "priority": 90
+}

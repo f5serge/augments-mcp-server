@@ -1,0 +1,57 @@
+{
+  "name": "microsoft-fabric",
+  "display_name": "Microsoft Fabric",
+  "category": "data-platforms",
+  "type": "unified-analytics-platform",
+  "description": "All-in-one analytics solution for enterprises that covers everything from data movement to data science, Real-Time Analytics, and business intelligence",
+  "version": "latest",
+  "sources": {
+    "documentation": {
+      "website": "https://learn.microsoft.com/en-us/fabric/"
+    },
+    "examples": {
+      "github": {
+        "repo": "microsoft/fabric-samples",
+        "docs_path": "",
+        "branch": "main"
+      }
+    }
+  },
+  "sections": {
+    "fundamentals": "fundamentals",
+    "data-factory": "data-factory",
+    "database": "database",
+    "iq": "iq",
+    "data-engineering": "data-engineering",
+    "data-warehouse": "data-warehouse",
+    "data-science": "data-science",
+    "real-time-analytics": "real-time-analytics",
+    "power-bi": "power-bi",
+    "onelake": "onelake"
+  },
+  "context_files": [
+    "README.md"
+  ],
+  "key_features": [
+    "onelake",
+    "data-factory",
+    "data-engineering",
+    "data-warehouse",
+    "data-science",
+    "real-time-analytics",
+    "power-bi",
+    "copilot",
+    "data-activator"
+  ],
+  "common_patterns": [
+    "medallion-architecture",
+    "lakehouse",
+    "warehouse",
+    "real-time-intelligence",
+    "end-to-end-analytics",
+    "business-intelligence",
+    "data-mesh"
+  ],
+  "priority": 95
+}
+

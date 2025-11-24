@@ -16,7 +16,7 @@ async def list_available_frameworks(
     
     Args:
         registry: Framework registry manager
-        category: Filter by category (web, backend, mobile, ai-ml, design, tools)
+        category: Filter by category (web, backend, mobile, ai-ml, design, tools, data-platforms)
     
     Returns:
         List of framework information including name, category, and description
