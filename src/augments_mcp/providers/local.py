@@ -73,8 +73,12 @@ class LocalProvider(BaseProvider):
             
             # List directory contents
             try:
-                for item in full_path.iterdir():
-                    if item.is_file() and item.suffix.lower() in ['.md', '.mdx']:
+                found_files = []
+                for ext in ['*.md', '*.mdx']:
+                    found_files.extend(full_path.rglob(ext))
+
+                for item in found_files:
+                    if item.is_file():
                         if item.name in priority_files:
                             # Add with priority
                             priority_index = priority_files.index(item.name)
@@ -90,7 +94,7 @@ class LocalProvider(BaseProvider):
             priority_items = [item for _, item in documentation_parts]
             
             # Limit to prevent overwhelming output
-            all_files = priority_items + regular_files[:10]
+            all_files = priority_items + regular_files[:30]
             
             # Read content for each file
             content_parts = []
@@ -101,7 +105,7 @@ class LocalProvider(BaseProvider):
                     
                     formatted_content = self._format_file_content(
                         content, 
-                        file_path.name,
+                        str(file_path.relative_to(full_path)),
                         str(file_path)
                     )
                     content_parts.append(formatted_content)

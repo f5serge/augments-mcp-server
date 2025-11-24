@@ -71,6 +71,11 @@ async def get_framework_docs(
         
         doc_source = config.sources.documentation
         
+        # Resolve section path if alias exists
+        section_path = section
+        if section and hasattr(config, 'sections') and config.sections and section in config.sections:
+            section_path = config.sections[section]
+
         # Try Local source first if available (highest priority)
         if hasattr(doc_source, 'local_path') and doc_source.local_path and local_provider:
             if ctx:
@@ -79,7 +84,7 @@ async def get_framework_docs(
             try:
                 local_content = await local_provider.fetch_documentation(
                     path=doc_source.local_path,
-                    target_path=section
+                    target_path=section_path
                 )
                 
                 if local_content:
@@ -101,7 +106,7 @@ async def get_framework_docs(
             try:
                 github_content = await github_provider.fetch_documentation(
                     repo=doc_source.github.repo,
-                    path=section or doc_source.github.docs_path,
+                    path=section_path or doc_source.github.docs_path,
                     branch=doc_source.github.branch
                 )
                 
@@ -124,12 +129,6 @@ async def get_framework_docs(
             try:
                 website_url = str(doc_source.website)
                 if section:
-                    # Check if framework has section mappings
-                    if hasattr(config, 'sections') and config.sections and section in config.sections:
-                        section_path = config.sections[section]
-                    else:
-                        section_path = section
-                    
                     # Try to append section to URL
                     if not website_url.endswith('/'):
                         website_url += '/'
@@ -748,7 +747,7 @@ def _calculate_relevance(text: str, query: str) -> float:
         score += 15
     
     # Penalty for very long lines
-    if len(text) > 200:
+    if len(text) > 500:
         score *= 0.8
     
     return min(score, 100.0)
@@ -785,7 +784,20 @@ def _infer_section_from_query(query: str) -> Optional[str]:
         'css': 'styling',
         'dark mode': 'theming',
         'theme': 'theming',
-        'theming': 'theming'
+        'theming': 'theming',
+        # Business / Sales Mappings
+        'pricing': 'pricing',
+        'rates': 'pricing',
+        'cost': 'pricing',
+        'proposal': 'proposals',
+        'sow': 'sows',
+        'statement of work': 'sows',
+        'work order': 'work-orders',
+        'wo': 'work-orders',
+        'case study': 'case-studies',
+        'case studies': 'case-studies',
+        'change request': 'change-requests',
+        'offering': 'offerings'
     }
     
     # Check for direct matches

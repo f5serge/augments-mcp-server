@@ -80,7 +80,7 @@ def validate_framework_config(config: Dict[str, Any]) -> bool:
             return False
         
         # Validate category (must be one of the allowed categories)
-        allowed_categories = ["web", "backend", "mobile", "ai-ml", "design", "tools", "database", "state-management", "devops", "testing", "customers", "data-platforms"]
+        allowed_categories = ["web", "backend", "mobile", "ai-ml", "design", "tools", "database", "state-management", "devops", "testing", "customers", "data-platforms", "company"]
         if config["category"] not in allowed_categories:
             logger.error("Invalid category", category=config["category"], allowed=allowed_categories)
             return False

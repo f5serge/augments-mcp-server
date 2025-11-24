@@ -161,48 +161,72 @@ class FrameworkRegistryManager:
     
     def search_frameworks(self, query: str) -> List[SearchResult]:
         """Search frameworks by name, features, or patterns."""
-        query_lower = query.lower()
+        query_lower = query.lower().strip()
+        query_tokens = query_lower.split()
         results = []
         
         for config in self.frameworks.values():
             score = 0.0
             matched_fields = []
             
-            # Exact name match gets highest score
+            # 1. Exact phrase matching (highest priority)
             if query_lower == config.name.lower():
                 score += 100
-                matched_fields.append("name")
+                matched_fields.append("name_exact")
             elif query_lower in config.name.lower():
                 score += 50
-                matched_fields.append("name")
+                matched_fields.append("name_phrase")
             
-            # Display name match
             if query_lower in config.display_name.lower():
-                score += 30
-                matched_fields.append("display_name")
-            
-            # Category match
-            if query_lower == config.category.lower():
-                score += 25
-                matched_fields.append("category")
-            
-            # Type match
-            if query_lower in config.type.lower():
-                score += 20
-                matched_fields.append("type")
-            
-            # Key features match
-            for feature in config.key_features:
-                if query_lower in feature.lower():
-                    score += 15
-                    matched_fields.append("key_features")
-            
-            # Common patterns match
-            for pattern in config.common_patterns:
-                if query_lower in pattern.lower():
-                    score += 10
-                    matched_fields.append("common_patterns")
-            
+                score += 40
+                matched_fields.append("display_name_phrase")
+
+            # 2. Token-based matching
+            token_matches = 0
+            for token in query_tokens:
+                token_score = 0
+                
+                # Name match
+                if token in config.name.lower():
+                    token_score += 10
+                    if "name" not in matched_fields: matched_fields.append("name")
+                
+                # Display name match
+                if token in config.display_name.lower():
+                    token_score += 8
+                    if "display_name" not in matched_fields: matched_fields.append("display_name")
+                
+                # Category match
+                if token == config.category.lower():
+                    token_score += 6
+                    if "category" not in matched_fields: matched_fields.append("category")
+                
+                # Type match
+                if token in config.type.lower():
+                    token_score += 5
+                    if "type" not in matched_fields: matched_fields.append("type")
+                
+                # Tags/Features match
+                for feature in config.key_features:
+                    if token in feature.lower():
+                        token_score += 4
+                        if "key_features" not in matched_fields: matched_fields.append("key_features")
+                        break # Count once per token
+                
+                for pattern in config.common_patterns:
+                    if token in pattern.lower():
+                        token_score += 3
+                        if "common_patterns" not in matched_fields: matched_fields.append("common_patterns")
+                        break # Count once per token
+                
+                if token_score > 0:
+                    score += token_score
+                    token_matches += 1
+
+            # Boost score if multiple tokens matched
+            if len(query_tokens) > 1 and token_matches > 1:
+                score *= (1 + (token_matches / len(query_tokens)))
+
             # Only include if there's a match
             if score > 0:
                 framework_info = FrameworkInfo(
